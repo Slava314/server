@@ -20,7 +20,7 @@ def run_calculations(id):
 
 
 class MyHandler(SimpleHTTPRequestHandler):
-    res_path = './resources/'
+    res_path = './resources'
 
     def do_POST(self):
         length = self.headers['content-length']
@@ -38,6 +38,7 @@ class MyHandler(SimpleHTTPRequestHandler):
                     run_calculations(id)
         if type == 'application/json':
             data = self.rfile.read(int(length))
+            print(self.res_path + self.path)
             if not os.path.exists(self.res_path + self.path):
                 with open(self.res_path + self.path, 'wb') as f:
                     f.write(data)
@@ -46,7 +47,7 @@ class MyHandler(SimpleHTTPRequestHandler):
                     id = data['id']
                     num = data['count']
                     if not os.path.exists(id):
-                        os.mkdir(self.res_path + id)
+                        os.mkdir(self.res_path + '/' + id)
                     if id not in id_dict:
                         id_dict[id] = 0
                         id_max[id] = int(num)
@@ -65,7 +66,7 @@ class MyHandler(SimpleHTTPRequestHandler):
                 finally:
                     f.close()
                     id_dict.pop(id)
-                    subprocess.call('rm -rf ' + self.res_path + id, shell=True)
+                    subprocess.call('rm -rf ' + self.res_path + '/' + id, shell=True)
             self.send_response(200)
             return
         self.send_response(404)
