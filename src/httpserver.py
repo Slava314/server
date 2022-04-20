@@ -62,7 +62,6 @@ class MyHandler(SimpleHTTPRequestHandler):
             if f:
                 try:
                     self.copyfile(f, self.wfile)
-                    print('copyfile')
                 finally:
                     f.close()
                     id_dict.pop(id)
