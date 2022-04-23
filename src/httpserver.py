@@ -11,10 +11,13 @@ id_max = {}
 def run_calculations(id):
     print('calculations: ' + id)
     id_dict[id] = -1
+    # start of your code
+    # files in folder = 'resources/' + id with original names, result must be located in this folder too
     sleep(5)
     with open('resources/' + id + '/res.png', 'wb') as res:
         with open('resources/' + id + '/im1.png', 'rb') as image:
             res.write(image.read())
+    # end of your code
     id_dict[id] = -2
     print('end of calculations: ' + id)
 
