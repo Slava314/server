@@ -15,13 +15,16 @@ import org.json.JSONObject;
 public class Main {
 
     public static void main(String[] args) throws IOException, InterruptedException {
-        httpClientRequest();
+        List<String> files = new ArrayList<>();
+        files.add("test/im1.png");
+        files.add("test/im2.png");
+        httpClientRequest(files);
     }
 
-    private static void initializationHTTPPOSTRequest(HttpClient client, String url, String token) throws FileNotFoundException {
+    private static void initializationHTTPPOSTRequest(HttpClient client, String url, String token, long numberOfFiles) throws FileNotFoundException {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("id", token);
-        jsonObject.put("count", "2"); // size of dir or number of selected
+        jsonObject.put("count", numberOfFiles); // size of dir or number of selected
         try {
             FileWriter file = new FileWriter("test/ini.json");
             file.write(jsonObject.toString());
@@ -72,17 +75,17 @@ public class Main {
         System.out.println(response.statusCode());
     }
 
-    private static void httpClientRequest() throws IOException, InterruptedException {
+    private static void httpClientRequest(List<String> files) throws IOException, InterruptedException {
         String token = UUID.randomUUID().toString();
         String url = "http://localhost:8000/";
         System.out.println(token);
         HttpClient client = HttpClient.newBuilder()
                 .version(HttpClient.Version.HTTP_1_1)
                 .build();
-        initializationHTTPPOSTRequest(client, url, token);
-
-        sendFileHTTPPOSTRequest(client, url, token, "test/im1.png"); // в цикле отправить все фотки
-        sendFileHTTPPOSTRequest(client, url, token, "test/im2.png");
+        initializationHTTPPOSTRequest(client, url, token, files.size());
+        for (String file : files) {
+            sendFileHTTPPOSTRequest(client, url, token, file);
+        }
 
         getFileHTTPGETRequest(client, url, token, "test/res.png");
     }
