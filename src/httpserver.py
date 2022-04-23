@@ -4,20 +4,17 @@ import os
 from time import sleep
 import json
 
+from reconstruction import runReconstruction
+
 id_dict = {}
 id_max = {}
-
 
 def run_calculations(id):
     print('calculations: ' + id)
     id_dict[id] = -1
-    sleep(5)
-    with open('resources/' + id + '/res.png', 'wb') as res:
-        with open('resources/' + id + '/im1.png', 'rb') as image:
-            res.write(image.read())
+    runReconstruction('resources/' + id)
     id_dict[id] = -2
     print('end of calculations: ' + id)
-
 
 class MyHandler(SimpleHTTPRequestHandler):
     res_path = './resources'
@@ -66,7 +63,7 @@ class MyHandler(SimpleHTTPRequestHandler):
                 finally:
                     f.close()
                     id_dict.pop(id)
-                    subprocess.call('rm -rf ' + self.res_path + '/' + id, shell=True)
+                    # subprocess.call('rm -rf ' + self.res_path + '/' + id, shell=True)
             self.send_response(200)
             return
         self.send_response(404)
