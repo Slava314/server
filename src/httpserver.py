@@ -12,7 +12,13 @@ id_max = {}
 def run_calculations(id):
     print('calculations: ' + id)
     id_dict[id] = -1
-    runReconstruction('resources/' + id)
+    # start of your code
+    # files in folder = 'resources/' + id with original names, result must be located in this folder too
+    sleep(5)
+    with open('resources/' + id + '/images/res.png', 'wb') as res:
+        with open('resources/' + id + '/images/im1.png', 'rb') as image:
+            res.write(image.read())
+    # end of your code
     id_dict[id] = -2
     print('end of calculations: ' + id)
 
@@ -22,8 +28,11 @@ class MyHandler(SimpleHTTPRequestHandler):
     def do_POST(self):
         length = self.headers['content-length']
         type = self.headers['content-type']
+        print('type = ' + type)
         if type == 'image/png':
             id = os.path.dirname(self.path)[1:]
+            print('id in POST = ' + id)
+
             if id in id_dict:
                 if id_dict[id] >= 0:
                     data = self.rfile.read(int(length))
@@ -31,11 +40,12 @@ class MyHandler(SimpleHTTPRequestHandler):
                         f.write(data)
                     id_dict[id] += 1
                     print('add file: ' + self.path)
+                print('id_dict[id] = ' + id_dict[id] + ' id_max[id] = ' + id_max[id])
                 if id_dict[id] == id_max[id]:
                     run_calculations(id)
         if type == 'application/json':
             data = self.rfile.read(int(length))
-            print(self.res_path + self.path)
+            print('self.res_path + self.path : ' + self.res_path + self.path)
             if not os.path.exists(self.res_path + self.path):
                 with open(self.res_path + self.path, 'wb') as f:
                     f.write(data)
@@ -45,6 +55,7 @@ class MyHandler(SimpleHTTPRequestHandler):
                     num = data['count']
                     if not os.path.exists(id):
                         os.mkdir(self.res_path + '/' + id)
+                        os.mkdir(self.res_path + '/' + id + '/images')
                     if id not in id_dict:
                         id_dict[id] = 0
                         id_max[id] = int(num)
@@ -53,9 +64,10 @@ class MyHandler(SimpleHTTPRequestHandler):
         self.send_response(200)
 
     def do_GET(self):
+        print('self.path = ' + self.path)
         f = self.send_head()
         id = os.path.dirname(self.path)[11:]
-        print(id)
+        print('id = ' + id)
         if id in id_dict and id_dict[id] == -2:
             if f:
                 try:

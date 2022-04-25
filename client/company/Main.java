@@ -9,6 +9,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 import org.json.JSONObject;
 
@@ -50,7 +52,7 @@ public class Main {
 
     private static void sendFileHTTPPOSTRequest(HttpClient client, String url, String token, String filePath) throws FileNotFoundException {
         HttpRequest requestIni = HttpRequest.newBuilder()
-                .uri(URI.create(url + token + '/' + Paths.get(filePath).getFileName().toString()))
+                .uri(URI.create(url + token + "/images/" + Paths.get(filePath).getFileName().toString()))
                 .POST(HttpRequest.BodyPublishers.ofFile(Paths.get(filePath)))
                 .version(HttpClient.Version.HTTP_1_1)
                 .header("Content-Type", "image/png")
@@ -65,7 +67,7 @@ public class Main {
 
     private static void getFileHTTPGETRequest(HttpClient client, String url, String token, String resultPath) throws IOException, InterruptedException {
         HttpRequest requestGet = HttpRequest.newBuilder()
-                .uri(URI.create(url + "resources/" + token + "/res.png"))
+                .uri(URI.create(url + "resources/" + token + "/images/res.png"))
                 .GET()
                 .version(HttpClient.Version.HTTP_1_1)
                 .build();
