@@ -9,6 +9,7 @@ from reconstruction import runReconstruction
 id_dict = {}
 id_max = {}
 
+
 def run_calculations(id):
     print('calculations: ' + id)
     id_dict[id] = -1
@@ -22,6 +23,7 @@ def run_calculations(id):
     id_dict[id] = -2
     print('end of calculations: ' + id)
 
+
 class MyHandler(SimpleHTTPRequestHandler):
     res_path = './resources'
 
@@ -30,7 +32,7 @@ class MyHandler(SimpleHTTPRequestHandler):
         type = self.headers['content-type']
         print('type = ' + type)
         if type == 'image/png':
-            id = os.path.dirname(self.path)[1:]
+            id = os.path.dirname(self.path)[1:].replace('/images', '')
             print('id in POST = ' + id)
 
             if id in id_dict:
@@ -40,7 +42,7 @@ class MyHandler(SimpleHTTPRequestHandler):
                         f.write(data)
                     id_dict[id] += 1
                     print('add file: ' + self.path)
-                print('id_dict[id] = ' + id_dict[id] + ' id_max[id] = ' + id_max[id])
+                print('id_dict[id] = ' + str(id_dict[id]) + ' id_max[id] = ' + str(id_max[id]))
                 if id_dict[id] == id_max[id]:
                     run_calculations(id)
         if type == 'application/json':
@@ -66,7 +68,7 @@ class MyHandler(SimpleHTTPRequestHandler):
     def do_GET(self):
         print('self.path = ' + self.path)
         f = self.send_head()
-        id = os.path.dirname(self.path)[11:]
+        id = os.path.dirname(self.path).replace('/resources/', '').replace('/images', '')
         print('id = ' + id)
         if id in id_dict and id_dict[id] == -2:
             if f:
