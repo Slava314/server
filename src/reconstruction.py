@@ -109,7 +109,7 @@ def getSfmData():
 
 def pmvsRebuildDensePointCloud():
     print("----------Use PMVS Rebuild dense point clouds, The surface of the texture----------")
-    pRecons = subprocess.Popen([os.path.join("pmvs2"), "/home/andrey/3dRec_example/ImageDataset_SceauxCastle/PMVS/", "pmvs_options.txt"])
+    pRecons = subprocess.Popen([os.path.join("pmvs2"), "/home/andrey/3dRec_example/ImageDataset_SceauxCastle/reconstruction_sequential/PMVS/", "pmvs_options.txt"])
 
 def runReconstruction(data_dir):
     # data_dir = os.path.abspath("./ImageDataset")
