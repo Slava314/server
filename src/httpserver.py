@@ -18,8 +18,11 @@ def run_calculations(id):
     runReconstruction('../resources/' + id)
 
     # sleep(5)
-    # with open('resources/' + id + '/images/res.png', 'wb') as res:
-    #     with open('resources/' + id + '/images/im1.png', 'rb') as image:
+    # os.mkdir('resources/' + id + '/reconstruction_sequential')
+    # os.mkdir('resources/' + id + '/reconstruction_sequential/PMVS')
+    # os.mkdir('resources/' + id + '/reconstruction_sequential/PMVS/models')
+    # with open('resources/' + id + '/reconstruction_sequential/PMVS/models/pmvs_options.txt.ply', 'wb') as res:
+    #     with open('resources/b96a34a8-1014-44cc-a8b3-75378eb1dacf/reconstruction_sequential/PMVS/models/pmvs_options.txt.ply', 'rb') as image:
     #         res.write(image.read())
     # end of your code
     id_dict[id] = -2
@@ -68,10 +71,10 @@ class MyHandler(SimpleHTTPRequestHandler):
         self.send_response(200)
 
     def do_GET(self):
-        print('self.path = ' + self.path)
+        print('self.path in GET = ' + self.path)
         f = self.send_head()
-        id = os.path.dirname(self.path)[1:].replace('resources/', '').replace('/images', '').replace('/reconstruction_sequential/PMVS/models', '')
-        print('id = ' + id)
+        id = os.path.dirname(self.path).replace('/resources/', '').replace('/reconstruction_sequential/PMVS/models', '')
+        print('id in GET = ' + id)
         if id in id_dict and id_dict[id] == -2:
             if f:
                 try:
