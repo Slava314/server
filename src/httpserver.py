@@ -1,3 +1,4 @@
+from pathlib import PurePath
 import subprocess
 from http.server import ThreadingHTTPServer, SimpleHTTPRequestHandler
 import os
@@ -15,7 +16,9 @@ def run_calculations(id):
     id_dict[id] = -1
     # start of your code
     # files in folder = 'resources/' + id with original names, result must be located in this folder too
-    runReconstruction('../resources/' + id)
+    data_dir = os.path.abspath('resources/' + id)
+    runReconstruction(data_dir)
+    os.chdir('../../..')
 
     # sleep(5)
     # os.mkdir('resources/' + id + '/reconstruction_sequential')
@@ -30,9 +33,10 @@ def run_calculations(id):
 
 
 class MyHandler(SimpleHTTPRequestHandler):
-    res_path = './resources'
+    res_path = os.path.abspath('/resources')
 
     def do_POST(self):
+        res_path = os.path.abspath('resources')
         length = self.headers['content-length']
         type = self.headers['content-type']
         print('type = ' + type)
@@ -42,8 +46,9 @@ class MyHandler(SimpleHTTPRequestHandler):
 
             if id in id_dict:
                 if id_dict[id] >= 0:
+                    # print('rfile ' + self.rfile.name)
                     data = self.rfile.read(int(length))
-                    with open(self.res_path + self.path, 'wb') as f:
+                    with open(res_path + self.path, 'wb') as f:
                         f.write(data)
                     id_dict[id] += 1
                     print('add file: ' + self.path)
@@ -51,31 +56,36 @@ class MyHandler(SimpleHTTPRequestHandler):
                 if id_dict[id] == id_max[id]:
                     run_calculations(id)
         if type == 'application/json':
+            # res_path = os.path.abspath('resources')
+            # print('res_path = ' + res_path) 
             data = self.rfile.read(int(length))
-            print('self.res_path + self.path : ' + self.res_path + self.path)
-            if not os.path.exists(self.res_path + self.path):
-                with open(self.res_path + self.path, 'wb') as f:
+            print('self.res_path + self.path : ' + res_path + self.path)
+            if not os.path.exists(res_path + self.path):
+                with open(res_path + self.path, 'wb') as f:
                     f.write(data)
-                with open(self.res_path + self.path) as f:
+                with open(res_path + self.path) as f:
                     data = json.load(f)
                     id = data['id']
                     num = data['count']
                     if not os.path.exists(id):
-                        os.mkdir(self.res_path + '/' + id)
-                        os.mkdir(self.res_path + '/' + id + '/images')
+                        os.mkdir(res_path + '/' + id)
+                        os.mkdir(res_path + '/' + id + '/images')
                     if id not in id_dict:
                         id_dict[id] = 0
                         id_max[id] = int(num)
-                os.remove(self.res_path + self.path)
+                os.remove(res_path + self.path)
                 print('add: ' + id)
         self.send_response(200)
 
     def do_GET(self):
         print('self.path in GET = ' + self.path)
+        # str = self.path[1:]
+        # self.path = os.path.abspath(str)
+        # print('self.path in GET = ' + self.path)
+        # print('translated' + self.translate_path(self.path))
         f = self.send_head()
         id = os.path.dirname(self.path).replace('/resources/', '').replace('/reconstruction_sequential/PMVS/models', '')
         print('id in GET = ' + id)
-
 
         if id in id_dict and id_dict[id] == -2:
             if f:

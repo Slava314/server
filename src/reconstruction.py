@@ -107,10 +107,12 @@ def getSfmData(data_dir):
     print("----------9. old openMVG Generated SfM_Data To apply to PMVS Input format file----------")
     os.chdir(os.path.abspath(data_dir + "/reconstruction_sequential/"))
     pRecons = subprocess.Popen([os.path.join("openMVG_main_openMVG2PMVS"), "-i", "sfm_data.bin", "-o", "./"])
+    pRecons.wait()
 
 def pmvsRebuildDensePointCloud(data_dir):
     print("----------Use PMVS Rebuild dense point clouds, The surface of the texture----------")
     pRecons = subprocess.Popen([os.path.join("pmvs2"), data_dir + "/reconstruction_sequential/PMVS/", "pmvs_options.txt"])
+    pRecons.wait()
 
 def runReconstruction(data_dir):
     # data_dir = os.path.abspath("./ImageDataset")
@@ -134,6 +136,6 @@ def runReconstruction(data_dir):
     getSfmData(data_dir)
     pmvsRebuildDensePointCloud(data_dir)
 
-if __name__ == '__main__':
-    print('running reconstruction...')
-    runReconstruction('/home/andrey/3dRec_example/ImageDataset_SceauxCastle')
+# if __name__ == '__main__':
+#     print('running reconstruction...')
+#     runReconstruction('/home/andrey/Java-project-server/resources/09c76690-b20f-4ddb-bd63-9dd1c66bbb5c')
