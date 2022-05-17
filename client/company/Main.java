@@ -18,8 +18,17 @@ public class Main {
 
     public static void main(String[] args) throws IOException, InterruptedException {
         List<String> files = new ArrayList<>();
-        files.add("test/im1.png");
-        files.add("test/im2.png");
+        files.add("test/im1.JPG");
+        files.add("test/im2.JPG");
+        files.add("test/im3.JPG");
+        files.add("test/im4.JPG");
+        files.add("test/im5.JPG");
+        files.add("test/im6.JPG");
+        files.add("test/im7.JPG");
+        files.add("test/im8.JPG");
+        files.add("test/im9.JPG");
+        files.add("test/im10.JPG");
+        files.add("test/im11.JPG");
         httpClientRequest(files);
     }
 

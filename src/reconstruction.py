@@ -46,7 +46,7 @@ def calculateGeometricMatches(matches_dir):
     pMatches = subprocess.Popen( [os.path.join(OPENMVG_SFM_BIN, "openMVG_main_ComputeMatches"),  "-i", matches_dir+"/sfm_data.json", "-o", matches_dir + "/match.txt", "-f", "1", "-n", "ANNL2"] )
     pMatches.wait()
 
-def runSequentialReconstruction(matches_dir, output_dir):
+def runSequentialReconstruction(matches_dir, reconstruction_dir):
     # 4.  Perform incremental 3D reconstruction 
     print ("----------4. Do Incremental/Sequential reconstruction----------") #set manually the initial pair to avoid the prompt question
     pRecons = subprocess.Popen( [os.path.join(OPENMVG_SFM_BIN, "openMVG_main_SfM"),  "-i", matches_dir+"/sfm_data.json", "--match_file", matches_dir + "/match.txt", "-o", reconstruction_dir] )
@@ -104,12 +104,12 @@ def rebuildDensePointCloud(reconstruction_dir):
 
 def getSfmData():
     print("----------9. old openMVG Generated SfM_Data To apply to PMVS Input format file----------")
-    os.chdir(os.path.abspath("./ImageDataset/reconstruction_sequential/"))
+    os.chdir(os.path.abspath("/home/andrey/3dRec_example/ImageDataset_SceauxCastle/reconstruction_sequential/"))
     pRecons = subprocess.Popen([os.path.join("openMVG_main_openMVG2PMVS"), "-i", "sfm_data.bin", "-o", "./"])
 
 def pmvsRebuildDensePointCloud():
     print("----------Use PMVS Rebuild dense point clouds, The surface of the texture----------")
-    pRecons = subprocess.Popen([os.path.join("pmvs2"), "./PMVS/pmvs_options.txt"])
+    pRecons = subprocess.Popen([os.path.join("pmvs2"), "/home/andrey/3dRec_example/ImageDataset_SceauxCastle/PMVS/", "pmvs_options.txt"])
 
 def runReconstruction(data_dir):
     # data_dir = os.path.abspath("./ImageDataset")
@@ -121,11 +121,15 @@ def runReconstruction(data_dir):
     getPhotos(data_dir, input_dir, matches_dir, output_dir)
     generateSceneDescription(input_dir, matches_dir, camera_file_params)
     calculateImageFeatures(matches_dir)
-    runSequentialReconstruction(matches_dir, output_dir)
+    calculateGeometricMatches(matches_dir)
+    runSequentialReconstruction(matches_dir, reconstruction_dir)
     calculateSceneStrctureColor(matches_dir)
-    measureRobustTriangles(reconstruction_dir)
+    measureRobustTriangles(matches_dir, reconstruction_dir)
     exportToPmvs(reconstruction_dir)
     rebuildDensePointCloud(reconstruction_dir)
     getSfmData()
     pmvsRebuildDensePointCloud()
 
+if __name__ == '__main__':
+    print('running reconstruction...')
+    runReconstruction('/home/andrey/3dRec_example/ImageDataset_SceauxCastle')
