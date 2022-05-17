@@ -76,6 +76,7 @@ class MyHandler(SimpleHTTPRequestHandler):
         id = os.path.dirname(self.path).replace('/resources/', '').replace('/reconstruction_sequential/PMVS/models', '')
         print('id in GET = ' + id)
 
+
         if id in id_dict and id_dict[id] == -2:
             if f:
                 try:
