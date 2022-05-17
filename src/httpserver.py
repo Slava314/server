@@ -70,7 +70,7 @@ class MyHandler(SimpleHTTPRequestHandler):
     def do_GET(self):
         print('self.path = ' + self.path)
         f = self.send_head()
-        id = os.path.dirname(self.path).replace('/resources/', '').replace('/images', '').replace('/reconstruction_sequential/PMVS/models', '')
+        id = os.path.dirname(self.path)[1:].replace('resources/', '').replace('/images', '').replace('/reconstruction_sequential/PMVS/models', '')
         print('id = ' + id)
         if id in id_dict and id_dict[id] == -2:
             if f:
