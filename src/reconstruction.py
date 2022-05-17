@@ -6,6 +6,7 @@
 import os
 import subprocess
 import sys
+import pathlib
 
 # openmvg compile bin Catalog ( can cp -p To /usr/local/bin/)
 OPENMVG_SFM_BIN = "/home/andrey/openMVG_Build/Linux-x86_64-RELEASE"
@@ -102,17 +103,20 @@ def rebuildDensePointCloud(reconstruction_dir):
     pRecons.wait()
     #* notes ： After implementation, it will be in ./PMVS/models Generate one in the folder pmvs_options.txt.ply Point cloud file , use meshlab Open to see the reconstructed color dense point cloud .
 
-def getSfmData():
+def getSfmData(data_dir):
     print("----------9. old openMVG Generated SfM_Data To apply to PMVS Input format file----------")
-    os.chdir(os.path.abspath("/home/andrey/3dRec_example/ImageDataset_SceauxCastle/reconstruction_sequential/"))
+    os.chdir(os.path.abspath(data_dir + "/reconstruction_sequential/"))
     pRecons = subprocess.Popen([os.path.join("openMVG_main_openMVG2PMVS"), "-i", "sfm_data.bin", "-o", "./"])
 
-def pmvsRebuildDensePointCloud():
+def pmvsRebuildDensePointCloud(data_dir):
     print("----------Use PMVS Rebuild dense point clouds, The surface of the texture----------")
-    pRecons = subprocess.Popen([os.path.join("pmvs2"), "/home/andrey/3dRec_example/ImageDataset_SceauxCastle/reconstruction_sequential/PMVS/", "pmvs_options.txt"])
+    pRecons = subprocess.Popen([os.path.join("pmvs2"), data_dir + "/reconstruction_sequential/PMVS/", "pmvs_options.txt"])
 
 def runReconstruction(data_dir):
     # data_dir = os.path.abspath("./ImageDataset")
+    print('running reconstruction')
+    print('current directory = ' + str(pathlib.Path(__file__).parent.resolve()))
+    print('DATADIR: ' + data_dir)
     input_dir = os.path.join(data_dir, "images")
     output_dir = data_dir
     matches_dir = os.path.join(output_dir, "matches")
@@ -127,8 +131,8 @@ def runReconstruction(data_dir):
     measureRobustTriangles(matches_dir, reconstruction_dir)
     exportToPmvs(reconstruction_dir)
     rebuildDensePointCloud(reconstruction_dir)
-    getSfmData()
-    pmvsRebuildDensePointCloud()
+    getSfmData(data_dir)
+    pmvsRebuildDensePointCloud(data_dir)
 
 if __name__ == '__main__':
     print('running reconstruction...')

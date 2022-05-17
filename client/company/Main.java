@@ -76,7 +76,7 @@ public class Main {
 
     private static void getFileHTTPGETRequest(HttpClient client, String url, String token, String resultPath) throws IOException, InterruptedException {
         HttpRequest requestGet = HttpRequest.newBuilder()
-                .uri(URI.create(url + "resources/" + token + "/images/res.png"))
+                .uri(URI.create(url + "resources/" + token + "/reconstruction_sequential/PMVS/models/pmvs_options.txt.ply"))
                 .GET()
                 .version(HttpClient.Version.HTTP_1_1)
                 .build();
@@ -98,7 +98,7 @@ public class Main {
             sendFileHTTPPOSTRequest(client, url, token, file);
         }
 
-        getFileHTTPGETRequest(client, url, token, "test/res.png");
+        getFileHTTPGETRequest(client, url, token, "test/pmvs_options.txt.ply");
     }
 
     private static void curlRequest() throws InterruptedException, IOException { // just old example
