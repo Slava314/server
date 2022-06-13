@@ -1,6 +1,6 @@
 from pathlib import PurePath
 import subprocess
-from http.server import ThreadingHTTPServer, SimpleHTTPRequestHandler
+from http.server import ThreadingHTTPServer, SimpleHTTPRequestHandler, HTTPServer
 import os
 from time import sleep
 import json
@@ -26,6 +26,10 @@ def run_calculations(id):
     # os.mkdir('resources/' + id + '/reconstruction_sequential/PMVS/models')
     # with open('resources/' + id + '/reconstruction_sequential/PMVS/models/pmvs_options.txt.ply', 'wb') as res:
     #     with open('resources/b96a34a8-1014-44cc-a8b3-75378eb1dacf/reconstruction_sequential/PMVS/models/pmvs_options.txt.ply', 'rb') as image:
+    #         res.write(image.read())
+
+    # with open('resources/' + id + '/res.png', 'wb') as res:
+    #     with open('resources/' + id + '/images/im1.png', 'rb') as image:
     #         res.write(image.read())
     # end of your code
     id_dict[id] = -2
@@ -55,7 +59,7 @@ class MyHandler(SimpleHTTPRequestHandler):
                 print('id_dict[id] = ' + str(id_dict[id]) + ' id_max[id] = ' + str(id_max[id]))
                 if id_dict[id] == id_max[id]:
                     run_calculations(id)
-        if type == 'application/json':
+        if type == 'application/json; charset=utf-8':
             # res_path = os.path.abspath('resources')
             # print('res_path = ' + res_path) 
             data = self.rfile.read(int(length))
@@ -76,6 +80,7 @@ class MyHandler(SimpleHTTPRequestHandler):
                 os.remove(res_path + self.path)
                 print('add: ' + id)
         self.send_response(200)
+        self.end_headers()
 
     def do_GET(self):
         print('self.path in GET = ' + self.path)
@@ -96,10 +101,12 @@ class MyHandler(SimpleHTTPRequestHandler):
                     id_dict.pop(id)
                     # subprocess.call('rm -rf ' + self.res_path + '/' + id, shell=True)
             self.send_response(200)
+            self.end_headers()
             return
         self.send_response(404)
+        self.end_headers()
 
 
 if __name__ == '__main__':
-    server = ThreadingHTTPServer(('localhost', 8000), MyHandler)
+    server = HTTPServer(('localhost', 8000), MyHandler)
     server.serve_forever()
