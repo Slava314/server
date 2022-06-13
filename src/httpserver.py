@@ -27,7 +27,7 @@ def run_calculations(id):
     # with open('resources/' + id + '/reconstruction_sequential/PMVS/models/pmvs_options.txt.ply', 'wb') as res:
     #     with open('resources/b96a34a8-1014-44cc-a8b3-75378eb1dacf/reconstruction_sequential/PMVS/models/pmvs_options.txt.ply', 'rb') as image:
     #         res.write(image.read())
-
+    # sleep(240)
     # with open('resources/' + id + '/res.png', 'wb') as res:
     #     with open('resources/' + id + '/images/im1.png', 'rb') as image:
     #         res.write(image.read())
@@ -99,7 +99,7 @@ class MyHandler(SimpleHTTPRequestHandler):
                 finally:
                     f.close()
                     id_dict.pop(id)
-                    # subprocess.call('rm -rf ' + self.res_path + '/' + id, shell=True)
+                    subprocess.call('rm -rf ./resources/' + id, shell=True)
             self.send_response(200)
             self.end_headers()
             return
@@ -108,5 +108,5 @@ class MyHandler(SimpleHTTPRequestHandler):
 
 
 if __name__ == '__main__':
-    server = HTTPServer(('localhost', 8000), MyHandler)
+    server = ThreadingHTTPServer(('localhost', 8000), MyHandler)
     server.serve_forever()
