@@ -6,6 +6,7 @@ from time import sleep
 import json
 
 from reconstruction import runReconstruction
+from pyngrok import ngrok
 
 id_dict = {}
 id_max = {}
@@ -16,18 +17,14 @@ def run_calculations(id):
     id_dict[id] = -1
     # start of your code
     # files in folder = 'resources/' + id with original names, result must be located in this folder too
+
+    # model reconstruction
     data_dir = os.path.abspath('resources/' + id)
     runReconstruction(data_dir)
     os.chdir('../../..')
 
-    # sleep(5)
-    # os.mkdir('resources/' + id + '/reconstruction_sequential')
-    # os.mkdir('resources/' + id + '/reconstruction_sequential/PMVS')
-    # os.mkdir('resources/' + id + '/reconstruction_sequential/PMVS/models')
-    # with open('resources/' + id + '/reconstruction_sequential/PMVS/models/pmvs_options.txt.ply', 'wb') as res:
-    #     with open('resources/b96a34a8-1014-44cc-a8b3-75378eb1dacf/reconstruction_sequential/PMVS/models/pmvs_options.txt.ply', 'rb') as image:
-    #         res.write(image.read())
-    # sleep(240)
+    # copy example
+    # sleep(3)
     # with open('resources/' + id + '/res.png', 'wb') as res:
     #     with open('resources/' + id + '/images/im1.png', 'rb') as image:
     #         res.write(image.read())
@@ -50,7 +47,6 @@ class MyHandler(SimpleHTTPRequestHandler):
 
             if id in id_dict:
                 if id_dict[id] >= 0:
-                    # print('rfile ' + self.rfile.name)
                     data = self.rfile.read(int(length))
                     with open(res_path + self.path, 'wb') as f:
                         f.write(data)
@@ -60,8 +56,6 @@ class MyHandler(SimpleHTTPRequestHandler):
                 if id_dict[id] == id_max[id]:
                     run_calculations(id)
         if type == 'application/json; charset=utf-8':
-            # res_path = os.path.abspath('resources')
-            # print('res_path = ' + res_path) 
             data = self.rfile.read(int(length))
             print('self.res_path + self.path : ' + res_path + self.path)
             if not os.path.exists(res_path + self.path):
@@ -84,10 +78,6 @@ class MyHandler(SimpleHTTPRequestHandler):
 
     def do_GET(self):
         print('self.path in GET = ' + self.path)
-        # str = self.path[1:]
-        # self.path = os.path.abspath(str)
-        # print('self.path in GET = ' + self.path)
-        # print('translated' + self.translate_path(self.path))
         f = self.send_head()
         id = os.path.dirname(self.path).replace('/resources/', '').replace('/reconstruction_sequential/PMVS/models', '')
         print('id in GET = ' + id)
@@ -108,5 +98,6 @@ class MyHandler(SimpleHTTPRequestHandler):
 
 
 if __name__ == '__main__':
-    server = ThreadingHTTPServer(('localhost', 8000), MyHandler)
+    port = 8888
+    server = ThreadingHTTPServer(('127.0.0.1', port), MyHandler)
     server.serve_forever()
