@@ -4,12 +4,14 @@ from http.server import ThreadingHTTPServer, SimpleHTTPRequestHandler, HTTPServe
 import os
 from time import sleep
 import json
+import zipfile
 
 from reconstruction import runReconstruction
 from pyngrok import ngrok
 
 id_dict = {}
 id_max = {}
+id_name = {}
 
 
 def run_calculations(id):
@@ -17,7 +19,10 @@ def run_calculations(id):
     id_dict[id] = -1
     # start of your code
     # files in folder = 'resources/' + id with original names, result must be located in this folder too
-
+    zip_file = 'resources/' + id + '/images/' + id_name[id]
+    with zipfile.ZipFile(zip_file) as z:
+        z.extractall('resources/' + id + '/images/')
+    os.remove(zip_file)
     # model reconstruction
     data_dir = os.path.abspath('resources/' + id)
     runReconstruction(data_dir)
@@ -34,14 +39,13 @@ def run_calculations(id):
 
 
 class MyHandler(SimpleHTTPRequestHandler):
-    res_path = os.path.abspath('/resources')
 
     def do_POST(self):
         res_path = os.path.abspath('resources')
         length = self.headers['content-length']
         type = self.headers['content-type']
         print('type = ' + type)
-        if type == 'image/png':
+        if type == 'application/zip':
             id = os.path.dirname(self.path)[1:].replace('/images', '')
             print('id in POST = ' + id)
 
@@ -65,12 +69,14 @@ class MyHandler(SimpleHTTPRequestHandler):
                     data = json.load(f)
                     id = data['id']
                     num = data['count']
+                    name = data['name']
                     if not os.path.exists(id):
                         os.mkdir(res_path + '/' + id)
                         os.mkdir(res_path + '/' + id + '/images')
                     if id not in id_dict:
                         id_dict[id] = 0
                         id_max[id] = int(num)
+                        id_name[id] = name
                 os.remove(res_path + self.path)
                 print('add: ' + id)
         self.send_response(200)
